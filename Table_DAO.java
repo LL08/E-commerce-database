@@ -18,8 +18,8 @@ public interface Table_DAO {
 	public ResultSet order_by(String name);
 	public ResultSet order_by_desc(String name);
 	//插入行
-	public ResultSet insert_into(String ... msgs);
-	public ResultSet insert_into_appoint(int n,String ... msgs);
+	public void insert_into(String ... msgs);
+	public void insert_into_appoint(int n,String ... msgs);
 	//更新删除行
 	public void updata(String name1,String name2,String oldValue,String newValue);
 	public void delete(String name,String value);

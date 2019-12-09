@@ -10,18 +10,32 @@ public class TableDao implements Table_DAO{
 	Connection ct;
 	Statement st;
 	ResultSet rs;
-	
+	public TableDao(String tableName) {
+		this.tableName=tableName;
+		col=null;
+		colType=null;
+	}
 	public String [] getCol() {
 		ResultSetMetaData data;
 		String[] co=null;
 		try {
 			data = rs.getMetaData();
 			co=new String[data.getColumnCount()];
-			for (int i = 1; i <= data.getColumnCount(); i++) {
-				int x=data.getColumnCount();
-				String Name=data.getColumnName(x);
-				col[i-1]=Name;
-				colType[i-1]=data.getColumnTypeName(i);
+			if(col==null) {
+				col=new String[data.getColumnCount()];
+				colType=new String[data.getColumnCount()];
+				for (int i = 1; i <= data.getColumnCount(); i++) {
+					String Name=data.getColumnName(i);
+					col[i-1]=Name;
+					co[i-1]=Name;
+					colType[i-1]=data.getColumnTypeName(i);
+				}
+			}
+			else {
+				for (int i = 1; i <= data.getColumnCount(); i++) {
+					String Name=data.getColumnName(i);
+					co[i-1]=Name;
+				}
 			}
 		} catch (SQLException e) {
 			// TODO 自动生成的 catch 块
@@ -56,6 +70,7 @@ public class TableDao implements Table_DAO{
 				for(int i=0;i<coName.length;++i)
 					System.out.print(coName[i]+": "+rs.getString(coName[i])+"  ");
 				System.out.println();
+				
 			}
 		} catch (SQLException e) {
 			// TODO 自动生成的 catch 块
@@ -66,7 +81,7 @@ public class TableDao implements Table_DAO{
 	@Override
 	public ResultSet select_all() {
 		// TODO 自动生成的方法存根
-		sql="select * from"+tableName;
+		sql="select * from "+tableName;
 		try {
 			st=ct.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 			rs=st.executeQuery(sql);
@@ -113,7 +128,7 @@ public class TableDao implements Table_DAO{
 	@Override
 	public ResultSet select_where(String columnName, String expression) {
 		// TODO 自动生成的方法存根
-		sql="SELECT "+columnName+" FROM "+tableName+expression;
+		sql="SELECT "+columnName+" FROM "+tableName+" where "+expression;
 		try {
 			rs=st.executeQuery(sql);
 			rsPrint();
@@ -127,7 +142,7 @@ public class TableDao implements Table_DAO{
 	@Override
 	public ResultSet select_where_in(String... msgs) {
 		// TODO 自动生成的方法存根
-		sql="SELECT * FROM "+tableName +"WHERE "+msgs[0]+" IN ";
+		sql="SELECT * FROM "+tableName +" WHERE "+msgs[0]+" IN ";
 		try {
 			ResultSetMetaData data = rs.getMetaData();
 			for (int i = 1; i <= data.getColumnCount(); i++) {
@@ -165,7 +180,7 @@ public class TableDao implements Table_DAO{
 			msgs1="'"+msgs1+"'";
 			msgs2="'"+msgs2+"'";
 		}
-		sql="SELECT * FROM "+tableName+"WHERE "+name +"BETWEEN "+msgs1+" AND "+msgs2;
+		sql="SELECT * FROM "+tableName+" WHERE "+name +" BETWEEN "+msgs1+" AND "+msgs2;
 		try {
 			rs=st.executeQuery(sql);
 			rsPrint();
@@ -179,9 +194,13 @@ public class TableDao implements Table_DAO{
 	@Override
 	public void alter_add(String name, String type) {
 		// TODO 自动生成的方法存根
-		sql="ALTER TABLE "+tableName+" ADD "+name+type;
+		sql="ALTER TABLE "+tableName+" ADD "+name+" "+type;
 		try {
 			st.executeUpdate(sql);
+			rs=st.executeQuery("select * from "+tableName);
+			col=null;
+			colType=null;
+			this.getCol();
 		} catch (SQLException e) {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
@@ -191,9 +210,13 @@ public class TableDao implements Table_DAO{
 	@Override
 	public void alter_alter(String name, String type) {
 		// TODO 自动生成的方法存根
-		sql="ALTER TABLE "+tableName+" alter "+name+type;
+		sql="ALTER TABLE "+tableName+" ALTER COLUMN "+name+" "+type;
 		try {
 			st.executeUpdate(sql);
+			rs=st.executeQuery("select * from "+tableName);
+			col=null;
+			colType=null;
+			this.getCol();
 		} catch (SQLException e) {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
@@ -203,9 +226,13 @@ public class TableDao implements Table_DAO{
 	@Override
 	public void  alter_drop(String name) {
 		// TODO 自动生成的方法存根
-		sql="ALTER TABLE "+tableName+" drop "+name;
+		sql="ALTER TABLE "+tableName+" DROP COLUMN "+name;
 		try {
 			st.executeUpdate(sql);
+			rs=st.executeQuery("select * from "+tableName);
+			col=null;
+			colType=null;
+			this.getCol();
 		} catch (SQLException e) {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
@@ -241,29 +268,27 @@ public class TableDao implements Table_DAO{
 	}
 
 	@Override
-	public ResultSet insert_into(String... msgs) {
+	public void insert_into(String... msgs) {
 		// TODO 自动生成的方法存根
-		sql="INSERT INTO Persons VALUES (*)";
+		sql="INSERT INTO "+tableName+" VALUES (*)";
 		String ms="";
 		for(int i=0;i<msgs.length;++i) {
-			if(!colType[getPoint(msgs[i])].equals("int")&&!colType[getPoint(msgs[i])].equals("float"))
+			if(!colType[getPoint(col[i])].equals("int")&&!colType[getPoint(col[i])].equals("float"))
 				msgs[i]="'"+msgs[i]+"'";
 			ms=ms+msgs[i]+",";
 		}
 		ms=ms.substring(0, ms.lastIndexOf(","));
-		sql=sql.replace("*", ms);
+		sql="SET NOCOUNT OFF "+sql.replace("*", ms);
 		try {
-			rs=st.executeQuery(sql);
-			rsPrint();
+			st.executeQuery(sql);
 		} catch (SQLException e) {
 			// TODO 自动生成的 catch 块
-			e.printStackTrace();
+		//	e.printStackTrace();
 		}
-		return rs;
 	}
 
 	@Override
-	public ResultSet insert_into_appoint(int n, String... msgs) {
+	public void insert_into_appoint(int n, String... msgs) {
 		// TODO 自动生成的方法存根
 		sql="INSERT INTO "+tableName+" (-) VALUES (*)";
 		String ms1="",ms2="";
@@ -272,20 +297,20 @@ public class TableDao implements Table_DAO{
 			ms1=ms1+","+msgs[i];
 		sql=sql.replace("-", ms1);
 		for(int i=n;i<msgs.length;++i) {
-			if(!colType[getPoint(msgs[i])].equals("int")&&!colType[getPoint(msgs[i])].equals("float"))
+			if(!colType[getPoint(msgs[i-n])].equals("int")&&!colType[getPoint(msgs[i-n])].equals("float"))
 				msgs[i]="'"+msgs[i]+"'";
 			ms2=ms2+msgs[i]+",";
 		}
 		ms2=ms2.substring(0, ms2.lastIndexOf(","));
 		sql=sql.replace("*", ms2);
+		System.out.println(sql);
 		try {
 			rs=st.executeQuery(sql);
 			rsPrint();
 		} catch (SQLException e) {
 			// TODO 自动生成的 catch 块
-			e.printStackTrace();
+	//		e.printStackTrace();
 		}
-		return rs;
 	}
 
 	@Override
@@ -295,7 +320,7 @@ public class TableDao implements Table_DAO{
 			oldValue="'"+oldValue+"'";
 		if(!colType[getPoint(name2)].equals("int")&&!colType[getPoint(name2)].equals("float"))
 			newValue="'"+newValue+"'";
-		sql="UPDATE "+tableName+" SET "+name1+" = "+oldValue+" WHERE "+name2+" = "+newValue;
+		sql="UPDATE "+tableName+" SET "+name2+" = "+newValue+" WHERE "+name1+" = "+oldValue;
 		try {
 			st.executeUpdate(sql);
 		} catch (SQLException e) {
@@ -327,10 +352,9 @@ public class TableDao implements Table_DAO{
 			rs.first();
 			do {
 				--n;
-				System.out.println(rs.getString("编号")+" "+
-						rs.getString("账号")+" "+
-						rs.getString("密码")+" "+
-						rs.getString("名称"));
+				for(int i=0;i<col.length;++i)
+					System.out.print(col[i]+": "+rs.getString(col[i])+"  ");
+				System.out.println();
 			}while(rs.next()&&n>0);
 			rs.absolute(p);
 		} catch (SQLException e) {
