@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!-- 根标签 -->
+<configuration>
+   <!-- 环境，可以配置多个，default：指定采用哪个环境 -->
+   	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="true"/>
+	</settings>
+   <environments default="test">
+      <!-- id：唯一标识 -->
+      <environment id="test">
+         <!-- 事务管理器，JDBC类型的事务管理器 -->
+         <transactionManager type="JDBC" />
+         <!-- 数据源，池类型的数据源 -->
+         <dataSource type="POOLED">
+            <property name="driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
+            <property name="url" value="jdbc:sqlserver://localhost:1433;databaseName=E-commerceDB" />
+            <property name="username" value="171002115" />
+            <property name="password" value="171002115" />
+         </dataSource>
+      </environment>
+   </environments>
+   <mappers>
+   	<mapper resource="mappers/AdminMapper.xml"/>
+   	<mapper resource="mappers/AnswerMapper.xml"/>
+   	<mapper resource="mappers/AskQuestionMapper.xml"/>
+   	
+   	<mapper resource="mappers/CategoryMapper.xml"/>
+   	<mapper resource="mappers/CommunityMapper.xml"/>
+   	<mapper resource="mappers/CouponMapper.xml"/>
+   	<mapper resource="mappers/CommentMapper.xml"/>
+   	
+   	<mapper resource="mappers/GoodsCouponMapper.xml"/>
+   	<mapper resource="mappers/GoodsMapper.xml"/>
+   	<mapper resource="mappers/GotCouponMapper.xml"/>
+   	
+   	<mapper resource="mappers/OrderDetailMapper.xml"/>
+   	<mapper resource="mappers/OrderMapper.xml"/>
+   	
+   	<mapper resource="mappers/SeckillMapper.xml"/>
+   	<mapper resource="mappers/ShopMapper.xml"/>
+   	
+   	<mapper resource="mappers/TagMapper.xml"/>
+   	<mapper resource="mappers/TakeDeliveryMapper.xml"/>
+    
+    <mapper resource="mappers/UserMapper.xml"/>
+     
+
+   </mappers>
+  </configuration>

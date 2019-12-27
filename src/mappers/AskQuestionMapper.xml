@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AskQuestionMapper">
+	<!-- 根据id查询一个商品种类信息 -->
+	<select id="selectAskQuestionById" parameterType="int" resultType="pojo.AskQuestion">
+		select * from ask_question where qusetionID = #{questionID}
+	</select>
+	<select id="queryQuestionAllByCommunityID" parameterType="int" resultType="pojo.AskQuestion">
+        select * from ask_question where (communityID = #{communityID} );
+    </select>	
+	 <!--插入数据-->
+    <insert id="insertAskQuestion" parameterType="pojo.AskQuestion">
+    	insert into ask_question([userID],[questionContent],[createTime],[communityID],[tagID],[attentionNum])
+		values(#{userID},#{questionContent},#{createTime},#{communityID},#{tagID},#{attentionNum});
+    </insert>
+
+    <update id="updateAskQuestion" parameterType="pojo.AskQuestion">
+        UPDATE ask_question
+        <trim prefix="set" suffixOverrides=",">
+            <if test="questionContent!=null">[questionContent] = #{questionContent},</if>
+            <if test="attentionNum!=null">[attentionNum] = #{attentionNum},</if>
+        </trim>
+        WHERE
+        ([questionID] = #{questionID});
+    </update>
+
+    <delete id="deleteAskQuestion" parameterType="int">
+        delete from ask_question where [questionID]=#{questionID}
+    </delete>
+</mapper>

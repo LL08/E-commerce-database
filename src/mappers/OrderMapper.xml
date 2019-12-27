@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OrderMapper">
+	<!-- 根据id查询一个订单信息 -->
+	<select id="selectOrderById" parameterType="int" resultType="pojo.Order">
+		select * from order where ID = #{ID}
+	</select>
+	<!-- 根据orderID查询一个订单信息 -->
+	<select id="selectOrderByOrderId" parameterType="int" resultType="pojo.Order">
+		select * from order where orderID = #{orderID}
+	</select>
+</mapper>

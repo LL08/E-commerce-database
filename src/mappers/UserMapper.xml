@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserMapper">
+	<!-- 根据id查询一个用户信息 -->
+	<select id="selectUserById" parameterType="int" resultType="pojo.User">
+		select * from user where ID = #{ID}
+	</select>
+	<!-- 根据查memberName查询一个用户信息 -->
+	<select id="selectUserByMemberName" parameterType="String" resultType="pojo.User">
+		select * from user where memberName = #{memberName}
+	</select>
+	<!-- 根据查nickName查询一个用户信息 -->
+	<select id="selectUserByNickName" parameterType="String" resultType="pojo.User">
+		select * from user where nickName = #{nickName}
+	</select>
+</mapper>

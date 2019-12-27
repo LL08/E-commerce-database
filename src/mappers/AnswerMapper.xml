@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AnswerMapper">
+
+	<select id="selectAnswerById" parameterType="dao.QUBean" resultType="pojo.AskQuestion">
+		select * from ask_question where qusetionID = #{qID} AND userID = #{uID};
+	</select>
+	<select id="queryAnswerAllByQuestionID" parameterType="int" resultType="pojo.Answer">
+        select * from answer where (questionID = #{questionID} );
+    </select>	
+	
+		
+	 <!--插入数据-->
+    <insert id="insertAnswer" parameterType="pojo.Answer">
+    	insert into answer([questionID],[userID],[answerContent],[answerTime],[thumbUpNum])
+		values(#{questionID},#{userID},#{answerContent},#{answerTime},#{thumbUpNum});
+    </insert>
+
+    <update id="updateAnswer" parameterType="pojo.Answer">
+        UPDATE answer
+        <trim prefix="set" suffixOverrides=",">
+            <if test="answerContent!=null">[answerContent] = #{answerContent},</if>
+            <if test="thumbUpNum!=null">[thumbUpNum] = #{thumbUpNum},</if>
+        </trim>
+        WHERE
+        ([questionID] = #{questionID} AND [userID] = #{userID});
+    </update>
+
+	<delete id="deleteAnswerByQuestionID" parameterType="int">
+        delete from answer where ([questionID]=#{questionID});
+    </delete>
+	
+    <delete id="deleteAnswer" parameterType="dao.QUBean">
+        delete from answer where ([questionID]=#{qID} AND userID = #{uID});
+    </delete>
+</mapper>
